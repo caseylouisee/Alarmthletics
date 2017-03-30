@@ -15,5 +15,28 @@
     <TimePicker
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/timePicker"/>
+            android:id="@+id/timePicker"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:timePickerMode="spinner"/>
+
+
+    <ToggleButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alarm On/Off"
+            android:id="@+id/alarmToggle"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/timePicker"
+            android:onClick="onToggleClicked" />
+    <TextView
+            android:text="TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="93dp"
+            android:id="@+id/textView"/>
+
+
 </RelativeLayout>
