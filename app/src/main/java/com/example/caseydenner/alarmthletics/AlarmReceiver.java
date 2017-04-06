@@ -28,6 +28,13 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
     private SensorManager mSensorManager;
     private Sensor proximitySensor;
+    private Sensor accelerometerSensor;
+    private float[] startPosition = new float[3];
+    private final int NEGATIVE_SENSOR_LIMIT = -5;
+    private final int POSITIVE_SENSOR_LIMIT = 5;
+    private final int SENSOR_OFFSET = 8;
+    private int repetitions = 5;
+    private boolean initialisation = false;
 
     AlertDialog.Builder builder;
     AlertDialog dialog;
@@ -45,6 +52,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
         mSensorManager = (SensorManager) inst.getSystemService(SENSOR_SERVICE);
         proximitySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        accelerometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         actions.add(0,"Do 10 sit ups");
         actions.add(1,"Do 5 press ups");
@@ -101,7 +109,81 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         };
 
         mSensorManager.registerListener(sensorEventListener, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
-        Log.d("PressUpCheck", "Listerner registered");
+        Log.d("PressUpCheck", "Listener registered");
 
+    }
+
+    public void SitUpCheck (final Ringtone ringtone){
+        Log.d("SitUpCheck", "Method called");
+        // If in ready position
+
+        SensorEventListener sensorEventListener = new SensorEventListener() {
+            int count = 0;
+            @Override
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+                    if (!initialisation) {
+                        startPosition[0] = sensorEvent.values[0];
+                        startPosition[1] = sensorEvent.values[1];
+                        startPosition[2] = sensorEvent.values[2];
+                        initialisation = true;
+                    }
+                    if (count < (repetitions * 2)) {
+                        if (startPosition[2] < NEGATIVE_SENSOR_LIMIT) {
+                            if (sensorEvent.values[2] < startPosition[2] + SENSOR_OFFSET) {
+                                startPosition[0] = sensorEvent.values[0];
+                                startPosition[1] = sensorEvent.values[1];
+                                startPosition[2] = sensorEvent.values[2];
+                                count++;
+                                Log.d("SitUpCheck", "sensorValues = " + sensorEvent.values[1]);
+                                dialog.setMessage(count + " Sit ups done");
+                                dialog.setTitle("Keep going!");
+                            }
+                        } else if (startPosition[2] > POSITIVE_SENSOR_LIMIT) {
+                            if (sensorEvent.values[2] < startPosition[2] - SENSOR_OFFSET) {
+                                startPosition[0] = sensorEvent.values[0];
+                                startPosition[1] = sensorEvent.values[1];
+                                startPosition[2] = sensorEvent.values[2];
+                                count++;
+                                Log.d("SitUpCheck", "sensorValues = " + sensorEvent.values[1]);
+                                dialog.setMessage(count + " Sit ups done");
+                                dialog.setTitle("Keep going!");
+                            }
+                        } else if (startPosition[1] < NEGATIVE_SENSOR_LIMIT) {
+                            if (sensorEvent.values[1] < startPosition[1] + SENSOR_OFFSET) {
+                                startPosition[0] = sensorEvent.values[0];
+                                startPosition[1] = sensorEvent.values[1];
+                                startPosition[2] = sensorEvent.values[2];
+                                count++;
+                                Log.d("SitUpCheck", "sensorValues = " + sensorEvent.values[1]);
+                                dialog.setMessage(count + " Sit ups done");
+                                dialog.setTitle("Keep going!");
+                            }
+                        } else if (startPosition[1] > POSITIVE_SENSOR_LIMIT) {
+                            if (sensorEvent.values[1] < startPosition[1] - SENSOR_OFFSET) {
+                                startPosition[0] = sensorEvent.values[0];
+                                startPosition[1] = sensorEvent.values[1];
+                                startPosition[2] = sensorEvent.values[2];
+                                count++;
+                                Log.d("SitUpCheck", "sensorValues = " + sensorEvent.values[1]);
+                                dialog.setMessage(count + " Sit ups done");
+                                dialog.setTitle("Keep going!");
+                            }
+                        }
+                    } else {
+                        Log.d("PressUpCheck", "5 Sit ups completed");
+                        dialog.dismiss();
+                        ringtone.stop();
+                    }
+                }
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int i) {
+            }
+        };
+
+        mSensorManager.registerListener(sensorEventListener, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        Log.d("SitUpCheck", "Listener registered");
     }
 }
