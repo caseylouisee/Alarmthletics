@@ -30,6 +30,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     private SensorManager mSensorManager;
     private Sensor proximitySensor;
     private Sensor accelerometerSensor;
+
     private float[] startPosition = new float[3];
     private final int NEGATIVE_SENSOR_LIMIT = -5;
     private final int POSITIVE_SENSOR_LIMIT = 5;
@@ -42,7 +43,6 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
     ArrayList<String> actions = new ArrayList<>();
     Random rand = new Random();
-    //int random  = rand.nextInt(actions.size());
 
     Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
 
@@ -55,13 +55,14 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         proximitySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         accelerometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-        actions.add(0,"Do 10 sit ups");
+        actions.add(0,"Do 5 sit ups");
         actions.add(1,"Do 5 press ups");
 
-        int test = 1;
+        //int random  = rand.nextInt(actions.size());
+        int random = 0;
 
         builder = new AlertDialog.Builder(inst);
-        builder.setMessage(actions.get(test)).setTitle("Wake up you fat git");
+        builder.setMessage(actions.get(random)).setTitle("Wake up you fat git");
         dialog = builder.create();
         dialog.show();
         dialog.setCancelable(false);
@@ -70,9 +71,9 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         final Ringtone ringtone = RingtoneManager.getRingtone(context, uri);
         ringtone.play();
 
-        if(test == 0){
-            //Sit up check
-        } else if (test == 1){
+        if(random == 0){
+            SitUpCheck(ringtone);
+        } else if (random == 1){
             Log.d("Test", "test == 1");
             PressUpCheck(ringtone);
         }
@@ -87,15 +88,16 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             public void onSensorChanged(SensorEvent sensorEvent) {
                 if (sensorEvent.sensor.getType() == Sensor.TYPE_PROXIMITY) {
                     if (sensorEvent.values[0] == 0) {
-                        if(count == 4){
+                        count++;
+                        if(count == 5){
                             Log.d("PressUpCheck", "5 Press ups completed");
                             dialog.dismiss();
                             ringtone.stop();
+                        } else {
+                            Log.d("PressUpCheck", count + "PressUps" + " sensorValues = 0");
+                            dialog.setMessage(count + " Press Ups done");
+                            dialog.setTitle("Keep going!");
                         }
-                        count ++;
-                        Log.d("PressUpCheck", "sensorValues = 0");
-                        dialog.setMessage(count + " Press Ups done");
-                        dialog.setTitle("Keep going!");
                     } else {
                         Log.d("PressUpCheck", "sensorValues not 0");
                     }
@@ -145,10 +147,11 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                                 count = counter(sensorEvent, count, 1);
                             }
                         }
-                    } else {
-                        Log.d("PressUpCheck", "5 Sit ups completed");
+                    } else if(count == repetitions*2){
+                        Log.d("SitUpCheck", "5 Sit ups completed");
                         dialog.dismiss();
                         ringtone.stop();
+                        count++;
                     }
                 }
             }
@@ -167,7 +170,10 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         startPosition[2] = event.values[2];
         counter++;
         Log.d("SitUpCheck", "sensorValues = " + event.values[axis]);
-        dialog.setMessage(counter + " Sit ups done");
+        if(counter%2==0){
+            Log.d("SitUpCheck", counter/2 + "SitUps");
+            dialog.setMessage(counter/2 + " Sit ups done");
+        }
         dialog.setTitle("Keep going!");
         return counter;
     }
