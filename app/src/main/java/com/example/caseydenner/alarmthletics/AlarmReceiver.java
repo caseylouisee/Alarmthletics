@@ -2,6 +2,7 @@ package com.example.caseydenner.alarmthletics;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -80,7 +81,6 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
     public void PressUpCheck(final Ringtone ringtone){
         Log.d("PressUpCheck", "Method called");
-
         SensorEventListener sensorEventListener = new SensorEventListener() {
             int count = 0;
             @Override
@@ -110,13 +110,12 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
         mSensorManager.registerListener(sensorEventListener, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
         Log.d("PressUpCheck", "Listener registered");
-
+        
     }
 
     public void SitUpCheck (final Ringtone ringtone){
         Log.d("SitUpCheck", "Method called");
         // If in ready position
-
         SensorEventListener sensorEventListener = new SensorEventListener() {
             int count = 0;
             @Override
@@ -131,43 +130,19 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                     if (count < (repetitions * 2)) {
                         if (startPosition[2] < NEGATIVE_SENSOR_LIMIT) {
                             if (sensorEvent.values[2] < startPosition[2] + SENSOR_OFFSET) {
-                                startPosition[0] = sensorEvent.values[0];
-                                startPosition[1] = sensorEvent.values[1];
-                                startPosition[2] = sensorEvent.values[2];
-                                count++;
-                                Log.d("SitUpCheck", "sensorValues = " + sensorEvent.values[1]);
-                                dialog.setMessage(count + " Sit ups done");
-                                dialog.setTitle("Keep going!");
+                                count = counter(sensorEvent, count, 2);
                             }
                         } else if (startPosition[2] > POSITIVE_SENSOR_LIMIT) {
                             if (sensorEvent.values[2] < startPosition[2] - SENSOR_OFFSET) {
-                                startPosition[0] = sensorEvent.values[0];
-                                startPosition[1] = sensorEvent.values[1];
-                                startPosition[2] = sensorEvent.values[2];
-                                count++;
-                                Log.d("SitUpCheck", "sensorValues = " + sensorEvent.values[1]);
-                                dialog.setMessage(count + " Sit ups done");
-                                dialog.setTitle("Keep going!");
+                                count = counter(sensorEvent, count, 2);
                             }
                         } else if (startPosition[1] < NEGATIVE_SENSOR_LIMIT) {
                             if (sensorEvent.values[1] < startPosition[1] + SENSOR_OFFSET) {
-                                startPosition[0] = sensorEvent.values[0];
-                                startPosition[1] = sensorEvent.values[1];
-                                startPosition[2] = sensorEvent.values[2];
-                                count++;
-                                Log.d("SitUpCheck", "sensorValues = " + sensorEvent.values[1]);
-                                dialog.setMessage(count + " Sit ups done");
-                                dialog.setTitle("Keep going!");
+                                count = counter(sensorEvent, count, 1);
                             }
                         } else if (startPosition[1] > POSITIVE_SENSOR_LIMIT) {
                             if (sensorEvent.values[1] < startPosition[1] - SENSOR_OFFSET) {
-                                startPosition[0] = sensorEvent.values[0];
-                                startPosition[1] = sensorEvent.values[1];
-                                startPosition[2] = sensorEvent.values[2];
-                                count++;
-                                Log.d("SitUpCheck", "sensorValues = " + sensorEvent.values[1]);
-                                dialog.setMessage(count + " Sit ups done");
-                                dialog.setTitle("Keep going!");
+                                count = counter(sensorEvent, count, 1);
                             }
                         }
                     } else {
@@ -184,6 +159,16 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         };
 
         mSensorManager.registerListener(sensorEventListener, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
-        Log.d("SitUpCheck", "Listener registered");
+    }
+
+    public int counter(SensorEvent event,int counter,int axis){
+        startPosition[0] = event.values[0];
+        startPosition[1] = event.values[1];
+        startPosition[2] = event.values[2];
+        counter++;
+        Log.d("SitUpCheck", "sensorValues = " + event.values[axis]);
+        dialog.setMessage(counter + " Sit ups done");
+        dialog.setTitle("Keep going!");
+        return counter;
     }
 }
