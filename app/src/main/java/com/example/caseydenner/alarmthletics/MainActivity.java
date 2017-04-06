@@ -52,16 +52,19 @@ public class MainActivity extends AppCompatActivity {
             int hour = timePicker.getCurrentHour();
             int minute = timePicker.getCurrentMinute();
 
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, hour);
-            calendar.set(Calendar.MINUTE, minute);
-            Log.d("Time", calendar.toString());
+            Calendar now = Calendar.getInstance();
+            Calendar alarm = Calendar.getInstance();
+            alarm.set(Calendar.HOUR_OF_DAY, hour);
+            alarm.set(Calendar.MINUTE, minute);
 
-            //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-              //      AlarmManager.INTERVAL_DAY, pendingIntent);
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            if (now.after(alarm)) {
+                Log.d("OnToggleClicked","Added a day");
+                alarm.add(Calendar.DATE, 1);
+            }
+
+            Log.d("Time", alarm.toString());
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.getTimeInMillis(), pendingIntent);
             textView.setText("Alarm on");
-
             Log.d("onToggleClicked", "Alarm On");
 
         }
