@@ -29,6 +29,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     private Sensor accelerometerSensor;
 
     private float[] startPosition = new float[3];
+    private final int ACCELEROMETER_CHECK_VALUE = 5;
     private final int NEGATIVE_SENSOR_LIMIT = -5;
     private final int POSITIVE_SENSOR_LIMIT = 5;
     private final int SENSOR_OFFSET = 8;
@@ -126,22 +127,22 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                         startPosition[2] = sensorEvent.values[2];
                         initialisation = true;
                     }
-                    if (count < (repetitions * 2)) {
+                    if (count < (repetitions*2)) {
                         if (startPosition[2] < NEGATIVE_SENSOR_LIMIT) {
-                            if (sensorEvent.values[2] < startPosition[2] + SENSOR_OFFSET) {
-                                count = counter(sensorEvent, count, 2);
+                            if (sensorEvent.values[2] > startPosition[2] + SENSOR_OFFSET) {
+                                count = sitUpCounter(sensorEvent, count, 2);
                             }
                         } else if (startPosition[2] > POSITIVE_SENSOR_LIMIT) {
                             if (sensorEvent.values[2] < startPosition[2] - SENSOR_OFFSET) {
-                                count = counter(sensorEvent, count, 2);
+                                count = sitUpCounter(sensorEvent, count, 2);
                             }
                         } else if (startPosition[1] < NEGATIVE_SENSOR_LIMIT) {
-                            if (sensorEvent.values[1] < startPosition[1] + SENSOR_OFFSET) {
-                                count = counter(sensorEvent, count, 1);
+                            if (sensorEvent.values[1] > startPosition[1] + SENSOR_OFFSET) {
+                                count = sitUpCounter(sensorEvent, count, 1);
                             }
                         } else if (startPosition[1] > POSITIVE_SENSOR_LIMIT) {
                             if (sensorEvent.values[1] < startPosition[1] - SENSOR_OFFSET) {
-                                count = counter(sensorEvent, count, 1);
+                                count = sitUpCounter(sensorEvent, count, 1);
                             }
                         }
                     } else if(count == repetitions*2){
@@ -161,17 +162,56 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         mSensorManager.registerListener(sensorEventListener, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
-    public int counter(SensorEvent event,int counter,int axis){
+    public void SquatCheck (final Ringtone ringtone){
+        Log.d("SquatCheck", "Method called");
+        // If in ready position
+        SensorEventListener sensorEventListener = new SensorEventListener() {
+            int count = 0;
+            @Override
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                if (sensorEvent.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION){
+                    if (count < (repetitions * 2)) {
+                        if (sensorEvent.values[0] > ACCELEROMETER_CHECK_VALUE){
+                            count++;
+                        } else if (sensorEvent.values[1] > ACCELEROMETER_CHECK_VALUE) {
+                            count++;
+                        } else if (sensorEvent.values[2] > ACCELEROMETER_CHECK_VALUE) {
+                            count++;
+                        }
+                    } else if(count == (repetitions*2)){
+                        Log.d("SquatCheck", "5 Squats completed");
+                        dialog.dismiss();
+                        ringtone.stop();
+                        count++;
+                    }
+
+                    if (count%2 == 0 && count <= (repetitions*2)){
+                        dialog.setMessage((count/2) + " Squats done");
+                        dialog.setTitle("Keep going!");
+                        Log.d("SitUpCheck", count/2 + "SitUps");
+                    }
+                }
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int i) {
+            }
+        };
+
+        mSensorManager.registerListener(sensorEventListener, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    public int sitUpCounter(SensorEvent event,int counter,int axis){
         startPosition[0] = event.values[0];
         startPosition[1] = event.values[1];
         startPosition[2] = event.values[2];
         counter++;
         Log.d("SitUpCheck", "sensorValues = " + event.values[axis]);
-        if(counter%2==0){
-            Log.d("SitUpCheck", counter/2 + "SitUps");
+        if(counter%2 == 0) {
+            dialog.setTitle("Keep going!");
             dialog.setMessage(counter/2 + " Sit ups done");
+            Log.d("SitUpCheck", counter/2 + "SitUps");
         }
-        dialog.setTitle("Keep going!");
         return counter;
     }
 }
