@@ -85,6 +85,13 @@ public class MainActivity extends AppCompatActivity {
             weekdays.setChecked(true);
             weekends.setChecked(true);
             everydayCheck = true;
+            if(weekdays.isChecked()&&!weekends.isChecked()){
+                everyday.setChecked(false);
+                everydayCheck = false;
+            }else if(!weekdays.isChecked()&&weekends.isChecked()){
+                everyday.setChecked(false);
+                everydayCheck = false;
+            }
         } else if(!everyday.isChecked()&&everydayCheck){
             weekdays.setChecked(false);
             weekends.setChecked(false);
