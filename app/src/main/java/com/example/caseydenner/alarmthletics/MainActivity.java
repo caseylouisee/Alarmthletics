@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox sunday;
 
     Boolean bweekdays;
+    Boolean everydayCheck = false;
 
     public static MainActivity instance() {
         return inst;
@@ -80,21 +81,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onChecked(View view){
-        if(weekdays.isChecked()){
-            weekdays.setChecked(true);
-        }
-        if(weekends.isChecked()){
-            weekends.setChecked(true);
-        }
         if(everyday.isChecked()){
             weekdays.setChecked(true);
             weekends.setChecked(true);
-        } else if(!everyday.isChecked()){
+            everydayCheck = true;
+        } else if(!everyday.isChecked()&&everydayCheck){
             weekdays.setChecked(false);
             weekends.setChecked(false);
+            everydayCheck = false;
         }
         if(weekdays.isChecked()&&weekends.isChecked()){
             everyday.setChecked(true);
+            everydayCheck = true;
+        }else{
+            everydayCheck = false;
         }
         if(specific.isChecked()){
             weekdays.setVisibility(View.INVISIBLE);
