@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox saturday;
     private CheckBox sunday;
 
-    Boolean bweekdays;
     Boolean everydayCheck = false;
 
     public static MainActivity instance() {
@@ -82,15 +81,16 @@ public class MainActivity extends AppCompatActivity {
 
     public void onChecked(View view){
         if(everyday.isChecked()){
-            weekdays.setChecked(true);
-            weekends.setChecked(true);
-            everydayCheck = true;
             if(weekdays.isChecked()&&!weekends.isChecked()){
                 everyday.setChecked(false);
                 everydayCheck = false;
             }else if(!weekdays.isChecked()&&weekends.isChecked()){
                 everyday.setChecked(false);
                 everydayCheck = false;
+            } else {
+                weekdays.setChecked(true);
+                weekends.setChecked(true);
+                everydayCheck = true;
             }
         } else if(!everyday.isChecked()&&everydayCheck){
             weekdays.setChecked(false);
@@ -188,6 +188,8 @@ public class MainActivity extends AppCompatActivity {
         alarm.set(Calendar.HOUR_OF_DAY, hour);
         alarm.set(Calendar.MINUTE, minute);
         alarm.set(Calendar.DAY_OF_WEEK, day);
+        alarm.set(Calendar.SECOND,10);
+        alarm.set(Calendar.MILLISECOND,10);
 
 //        if (now.after(alarm)) {
 //            Log.d("OnToggleClicked","Added a day");
