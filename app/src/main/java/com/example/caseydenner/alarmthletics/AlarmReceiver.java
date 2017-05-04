@@ -27,6 +27,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     private SensorManager mSensorManager;
     private Sensor proximitySensor;
     private Sensor accelerometerSensor;
+    private Sensor linearAccelerometerSensor;
 
     private float[] startPosition = new float[3];
     private final int ACCELEROMETER_CHECK_VALUE = 5;
@@ -52,12 +53,14 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         mSensorManager = (SensorManager) inst.getSystemService(SENSOR_SERVICE);
         proximitySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         accelerometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        linearAccelerometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
         actions.add(0,"Do 5 sit ups");
         actions.add(1,"Do 5 press ups");
+        actions.add(2,"Do 5 squats");
 
         //int random  = rand.nextInt(actions.size());
-        int random = 0;
+        int random = 2;
 
         builder = new AlertDialog.Builder(inst);
         builder.setMessage(actions.get(random)).setTitle("Wake up you fat git");
@@ -74,6 +77,8 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         } else if (random == 1){
             Log.d("Test", "test == 1");
             PressUpCheck(ringtone);
+        } else if(random==2){
+            SquatCheck(ringtone);
         }
 
     }
@@ -178,6 +183,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                         } else if (sensorEvent.values[2] > ACCELEROMETER_CHECK_VALUE) {
                             count++;
                         }
+                        Log.d("SquatCheck", sensorEvent.values.toString());
                     } else if(count == (repetitions*2)){
                         Log.d("SquatCheck", "5 Squats completed");
                         dialog.dismiss();
@@ -188,7 +194,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                     if (count%2 == 0 && count <= (repetitions*2)){
                         dialog.setMessage((count/2) + " Squats done");
                         dialog.setTitle("Keep going!");
-                        Log.d("SitUpCheck", count/2 + "SitUps");
+                        Log.d("SquatCheck", count/2 + "Squats");
                     }
                 }
             }
@@ -198,7 +204,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             }
         };
 
-        mSensorManager.registerListener(sensorEventListener, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(sensorEventListener, linearAccelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     public int sitUpCounter(SensorEvent event,int counter,int axis){
