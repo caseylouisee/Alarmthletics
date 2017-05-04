@@ -30,12 +30,14 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     private Sensor linearAccelerometerSensor;
 
     private float[] startPosition = new float[3];
-    private final int ACCELEROMETER_CHECK_VALUE = 5;
+    private final int POSITIVE_ACCELEROMETER_CHECK_VALUE = 5;
+    private final int NEGATIVE_ACCELEROMETER_CHECK_VALUE = -5;
     private final int NEGATIVE_SENSOR_LIMIT = -5;
     private final int POSITIVE_SENSOR_LIMIT = 5;
     private final int SENSOR_OFFSET = 8;
     private int repetitions = 5;
     private boolean initialisation = false;
+    private boolean downSwitch = true;
 
     AlertDialog.Builder builder;
     AlertDialog dialog;
@@ -176,12 +178,24 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             public void onSensorChanged(SensorEvent sensorEvent) {
                 if (sensorEvent.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION){
                     if (count < (repetitions * 2)) {
-                        if (sensorEvent.values[0] > ACCELEROMETER_CHECK_VALUE){
-                            count++;
-                        } else if (sensorEvent.values[1] > ACCELEROMETER_CHECK_VALUE) {
-                            count++;
-                        } else if (sensorEvent.values[2] > ACCELEROMETER_CHECK_VALUE) {
-                            count++;
+                        if (downSwitch) {
+                            if (sensorEvent.values[0] < NEGATIVE_ACCELEROMETER_CHECK_VALUE) {
+                                count++;
+                            } else if (sensorEvent.values[1] < NEGATIVE_ACCELEROMETER_CHECK_VALUE) {
+                                count++;
+                            } else if (sensorEvent.values[2] < NEGATIVE_ACCELEROMETER_CHECK_VALUE) {
+                                count++;
+                            }
+                            downSwitch = !downSwitch;
+                        }else {
+                            if (sensorEvent.values[0] > POSITIVE_ACCELEROMETER_CHECK_VALUE) {
+                                count++;
+                            } else if (sensorEvent.values[1] > POSITIVE_ACCELEROMETER_CHECK_VALUE) {
+                                count++;
+                            } else if (sensorEvent.values[2] > POSITIVE_ACCELEROMETER_CHECK_VALUE) {
+                                count++;
+                            }
+                            downSwitch = !downSwitch;
                         }
                         Log.d("SquatCheck", sensorEvent.values.toString());
                     } else if(count == (repetitions*2)){
