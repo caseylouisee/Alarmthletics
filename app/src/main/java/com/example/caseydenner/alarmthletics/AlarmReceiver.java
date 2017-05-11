@@ -185,21 +185,26 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                         if (downSwitch) {
                             if (sensorEvent.values[0] < NEGATIVE_ACCELEROMETER_CHECK_VALUE) {
                                 count++;
+                                downSwitch = !downSwitch;
                             } else if (sensorEvent.values[1] < NEGATIVE_ACCELEROMETER_CHECK_VALUE) {
                                 count++;
+                                downSwitch = !downSwitch;
                             } else if (sensorEvent.values[2] < NEGATIVE_ACCELEROMETER_CHECK_VALUE) {
                                 count++;
+                                downSwitch = !downSwitch;
                             }
-                            downSwitch = !downSwitch;
+
                         }else {
                             if (sensorEvent.values[0] > POSITIVE_ACCELEROMETER_CHECK_VALUE) {
                                 count++;
+                                downSwitch = !downSwitch;
                             } else if (sensorEvent.values[1] > POSITIVE_ACCELEROMETER_CHECK_VALUE) {
                                 count++;
+                                downSwitch = !downSwitch;
                             } else if (sensorEvent.values[2] > POSITIVE_ACCELEROMETER_CHECK_VALUE) {
                                 count++;
+                                downSwitch = !downSwitch;
                             }
-                            downSwitch = !downSwitch;
                         }
                         Log.d("squatCheck","0: " + String.valueOf(sensorEvent.values[0]) +
                         "1: " + String.valueOf(sensorEvent.values[1]) + "2: " + String.valueOf(sensorEvent.values[2]));
