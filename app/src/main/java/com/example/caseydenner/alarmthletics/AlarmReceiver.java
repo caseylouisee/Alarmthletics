@@ -31,8 +31,8 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     private Sensor heartRateSensor;
 
     private float[] startPosition = new float[3];
-    private final int POSITIVE_ACCELEROMETER_CHECK_VALUE = 5;
-    private final int NEGATIVE_ACCELEROMETER_CHECK_VALUE = -5;
+    private final int POSITIVE_ACCELEROMETER_CHECK_VALUE = 4;
+    private final int NEGATIVE_ACCELEROMETER_CHECK_VALUE = -4;
     private final int NEGATIVE_SENSOR_LIMIT = -5;
     private final int POSITIVE_SENSOR_LIMIT = 5;
     private final int SENSOR_OFFSET = 8;
@@ -64,8 +64,8 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         actions.add(2,"Do 5 squats");
         actions.add(3, "Run on the spot");
 
-        int random  = rand.nextInt(actions.size());
-        //int random = 4;
+        //int random  = rand.nextInt(actions.size());
+        int random = 2;
 
         builder = new AlertDialog.Builder(inst);
         builder.setMessage(actions.get(random)).setTitle("Wake up and get physical!");

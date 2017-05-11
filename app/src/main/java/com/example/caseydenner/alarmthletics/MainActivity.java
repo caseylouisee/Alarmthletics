@@ -133,27 +133,27 @@ public class MainActivity extends AppCompatActivity {
 
     public void onToggleClicked(View view) {
         if(toggleButton.isChecked()){
-            if(weekdays.isChecked()){
-                setAlarm(Calendar.MONDAY);
-                setAlarm(Calendar.TUESDAY);
-                setAlarm(Calendar.WEDNESDAY);
-                setAlarm(Calendar.THURSDAY);
-                setAlarm(Calendar.FRIDAY);
-            }
-            if(weekends.isChecked()){
-                setAlarm(Calendar.SATURDAY);
-                setAlarm(Calendar.SUNDAY);
-            }
             if(everyday.isChecked()){
                 setAlarm(Calendar.MONDAY);
                 setAlarm(Calendar.TUESDAY);
                 setAlarm(Calendar.WEDNESDAY);
-                setAlarm(Calendar.THURSDAY);
                 setAlarm(Calendar.FRIDAY);
                 setAlarm(Calendar.SATURDAY);
                 setAlarm(Calendar.SUNDAY);
+                setAlarm(Calendar.THURSDAY);
             }
-            if(specific.isChecked()){
+            else if(weekdays.isChecked()){
+                setAlarm(Calendar.MONDAY);
+                setAlarm(Calendar.TUESDAY);
+                setAlarm(Calendar.WEDNESDAY);
+                setAlarm(Calendar.FRIDAY);
+                setAlarm(Calendar.THURSDAY);
+            }
+            else if(weekends.isChecked()){
+                setAlarm(Calendar.SATURDAY);
+                setAlarm(Calendar.SUNDAY);
+            }
+            else if(specific.isChecked()){
                 if(monday.isChecked()){
                     setAlarm(Calendar.MONDAY);
                 }
@@ -163,9 +163,6 @@ public class MainActivity extends AppCompatActivity {
                 if(wednesday.isChecked()){
                     setAlarm(Calendar.WEDNESDAY);
                 }
-                if(thursday.isChecked()){
-                    setAlarm(Calendar.THURSDAY);
-                }
                 if(friday.isChecked()){
                     setAlarm(Calendar.FRIDAY);
                 }
@@ -174,6 +171,9 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if(sunday.isChecked()){
                     setAlarm(Calendar.SUNDAY);
+                }
+                if(thursday.isChecked()){
+                    setAlarm(Calendar.THURSDAY);
                 }
             }
         }
