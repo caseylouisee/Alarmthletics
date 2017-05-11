@@ -64,11 +64,11 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         actions.add(2,"Do 5 squats");
         actions.add(3, "Run on the spot");
 
-        //int random  = rand.nextInt(actions.size());
-        int random = 4;
+        int random  = rand.nextInt(actions.size());
+        //int random = 4;
 
         builder = new AlertDialog.Builder(inst);
-        builder.setMessage(actions.get(random)).setTitle("Wake up you fat git");
+        builder.setMessage(actions.get(random)).setTitle("Wake up and get physical!");
         dialog = builder.create();
         dialog.show();
         dialog.setCancelable(false);
