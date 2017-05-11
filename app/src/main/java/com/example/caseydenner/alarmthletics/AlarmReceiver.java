@@ -2,6 +2,7 @@ package com.example.caseydenner.alarmthletics;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -31,8 +32,6 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     private Sensor heartRateSensor;
 
     private float[] startPosition = new float[3];
-    private final int POSITIVE_ACCELEROMETER_CHECK_VALUE = 4;
-    private final int NEGATIVE_ACCELEROMETER_CHECK_VALUE = -4;
     private final int NEGATIVE_SENSOR_LIMIT = -5;
     private final int POSITIVE_SENSOR_LIMIT = 5;
     private final int SENSOR_OFFSET = 8;
@@ -59,13 +58,14 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         linearAccelerometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         heartRateSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE);
 
+        final Ringtone ringtone = RingtoneManager.getRingtone(context, uri);
+
         actions.add(0,"Do 5 sit ups");
         actions.add(1,"Do 5 press ups");
-        actions.add(2,"Do 5 squats");
-        actions.add(3, "Run on the spot");
+        actions.add(2, "Run on the spot");
 
         //int random  = rand.nextInt(actions.size());
-        int random = 2;
+        int random = 1;
 
         builder = new AlertDialog.Builder(inst);
         builder.setMessage(actions.get(random)).setTitle("Wake up and get physical!");
@@ -74,16 +74,13 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
 
-        final Ringtone ringtone = RingtoneManager.getRingtone(context, uri);
         ringtone.play();
 
         if(random == 0){
             sitUpCheck(ringtone);
-        } else if (random == 1){
+        } else if (random == 1) {
             pressUpCheck(ringtone);
-        } else if(random==2){
-            squatCheck(ringtone);
-        } else if(random==3){
+        } else if (random==2){
             heartRateCheck(ringtone);
         }
 
@@ -171,64 +168,6 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         };
 
         mSensorManager.registerListener(sensorEventListener, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
-    }
-
-    public void squatCheck (final Ringtone ringtone){
-        Log.d("squatCheck", "Method called");
-        // If in ready position
-        SensorEventListener sensorEventListener = new SensorEventListener() {
-            int count = 0;
-            @Override
-            public void onSensorChanged(SensorEvent sensorEvent) {
-                if (sensorEvent.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION){
-                    if (count < (repetitions * 2)) {
-                        if (downSwitch) {
-                            if (sensorEvent.values[0] < NEGATIVE_ACCELEROMETER_CHECK_VALUE) {
-                                count++;
-                                downSwitch = !downSwitch;
-                            } else if (sensorEvent.values[1] < NEGATIVE_ACCELEROMETER_CHECK_VALUE) {
-                                count++;
-                                downSwitch = !downSwitch;
-                            } else if (sensorEvent.values[2] < NEGATIVE_ACCELEROMETER_CHECK_VALUE) {
-                                count++;
-                                downSwitch = !downSwitch;
-                            }
-
-                        }else {
-                            if (sensorEvent.values[0] > POSITIVE_ACCELEROMETER_CHECK_VALUE) {
-                                count++;
-                                downSwitch = !downSwitch;
-                            } else if (sensorEvent.values[1] > POSITIVE_ACCELEROMETER_CHECK_VALUE) {
-                                count++;
-                                downSwitch = !downSwitch;
-                            } else if (sensorEvent.values[2] > POSITIVE_ACCELEROMETER_CHECK_VALUE) {
-                                count++;
-                                downSwitch = !downSwitch;
-                            }
-                        }
-                        Log.d("squatCheck","0: " + String.valueOf(sensorEvent.values[0]) +
-                        "1: " + String.valueOf(sensorEvent.values[1]) + "2: " + String.valueOf(sensorEvent.values[2]));
-                    } else if(count == (repetitions*2)){
-                        Log.d("squatCheck", "5 Squats completed");
-                        dialog.dismiss();
-                        ringtone.stop();
-                        count++;
-                    }
-
-                    if (count%2 == 0 && count <= (repetitions*2)){
-                        dialog.setMessage((count/2) + " Squats done");
-                        dialog.setTitle("Keep going!");
-                        Log.d("squatCheck", count/2 + "Squats");
-                    }
-                }
-            }
-
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int i) {
-            }
-        };
-
-        mSensorManager.registerListener(sensorEventListener, linearAccelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     public void heartRateCheck(final Ringtone ringtone){
